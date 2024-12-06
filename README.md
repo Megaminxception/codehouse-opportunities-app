@@ -7,15 +7,15 @@ Run the following command in your terminal:
 npm i -g yarn
 ```
 
+Verify that yarn is installed by running:
+```bash
+yarn --version
+```
+
 ## Install dependencies
 In the project directory, run the following command:
 ```bash
 yarn
-```
-
-Verify that yarn is installed by running:
-```bash
-yarn --version
 ```
 
 ## Run the development server
