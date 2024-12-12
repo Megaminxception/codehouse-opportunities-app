@@ -5,8 +5,8 @@ export function AppShell({ children }) {
   return (
     <div className="w-full min-h-screen relative">
       <Nav />
-      <Footer />
       {children}
+      <Footer />
     </div>
   );
 }
