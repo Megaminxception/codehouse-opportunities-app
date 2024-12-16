@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { Flex, Text, Input, Box } from "@chakra-ui/react";
+import Calendar from "react-calendar";
+import "react-calendar/dist/Calendar.css";
 
 export default function Events() {
   const [searchValue, setSearchValue] = useState("");
@@ -15,7 +17,7 @@ export default function Events() {
     async function fetchHosts() {
       try {
         console.log("Fetching hosts...");
-        
+
         // Fetch Events Table
         const eventsResponse = await fetch(
           `https://api.airtable.com/v0/${BASE_ID}/Events`,
@@ -32,7 +34,6 @@ export default function Events() {
 
         const eventsData = await eventsResponse.json();
 
-
         // Collect unique Host IDs from Events
         const hostIds = new Set();
         eventsData.records.forEach((record) => {
@@ -41,8 +42,6 @@ export default function Events() {
             hostField.forEach((id) => hostIds.add(id));
           }
         });
-
-
 
         // Fetch Partners Table to get Host Names
         const partnersResponse = await fetch(
@@ -55,19 +54,18 @@ export default function Events() {
         );
 
         if (!partnersResponse.ok) {
-          throw new Error(`Error fetching partners: ${partnersResponse.status}`);
+          throw new Error(
+            `Error fetching partners: ${partnersResponse.status}`
+          );
         }
 
         const partnersData = await partnersResponse.json();
-        
 
         // Map Partner Names by ID
         const partnerMap = {};
         partnersData.records.forEach((record) => {
           partnerMap[record.id] = record.fields["Partner Name"];
         });
-
-      
 
         // Match Event Host IDs to Partner Names
         const uniqueHosts = Array.from(hostIds)
@@ -97,7 +95,6 @@ export default function Events() {
       pt={24}
       fontFamily="var(--font-mulish)"
     >
-  
       <Box mb={8} textAlign="center">
         <Text as="h1" fontSize="34px" fontWeight="900" color="black">
           Events
@@ -130,7 +127,10 @@ export default function Events() {
             color="black"
             _placeholder={{ color: "black" }}
             _hover={{ borderColor: "gray.400" }}
-            _focus={{ borderColor: "blue.500", boxShadow: "0 0 0 1px blue.500" }}
+            _focus={{
+              borderColor: "blue.500",
+              boxShadow: "0 0 0 1px blue.500",
+            }}
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
           />
@@ -170,7 +170,10 @@ export default function Events() {
               width="100%"
               color="black"
               _hover={{ borderColor: "gray.400" }}
-              _focus={{ borderColor: "blue.500", boxShadow: "0 0 0 1px blue.500" }}
+              _focus={{
+                borderColor: "blue.500",
+                boxShadow: "0 0 0 1px blue.500",
+              }}
             >
               {loading ? (
                 <option>Loading hosts...</option>
@@ -190,6 +193,7 @@ export default function Events() {
           </Box>
         </Flex>
       </Box>
+      <Calendar></Calendar>
     </Flex>
   );
 }
