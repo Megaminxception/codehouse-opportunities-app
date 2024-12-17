@@ -1,4 +1,13 @@
-import { Fieldset, Stack, Center, Textarea, Input } from "@chakra-ui/react";
+import {
+  Fieldset,
+  Stack,
+  Center,
+  Textarea,
+  Input,
+  Heading,
+  Text,
+  Box,
+} from "@chakra-ui/react";
 import { Field } from "@/components/ui/field";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
@@ -6,13 +15,19 @@ import {
   NativeSelectField,
   NativeSelectRoot,
 } from "@/components/ui/native-select";
-import { text } from "express";
 
 const fields = [
   // this would be replaced with actual data from airtable
   {
     label: "Partner*",
-    text: "Not seeing your organization? Register here.",
+    text: (
+      <Text textStyle="sm">
+        Not seeing your organization?{" "}
+        <Text as="span" color="#900B09" cursor="pointer">
+          Register here.
+        </Text>
+      </Text>
+    ),
     type: "select",
     name: "Partner",
     items: ["ABC company", "123 company", "Other"],
@@ -21,25 +36,25 @@ const fields = [
     label: "Opportunity Type*",
     type: "select",
     name: "Opportunity Type",
-    items: ["ABC company", "123 company", "Other"],
+    items: ["Event", "123 company", "Other"],
   },
   {
     label: "Time and Date of Event",
-    type: "select",
+    type: "input",
     name: "Time and Date of Event*",
-    items: ["ABC company", "123 company", "Other"],
+    placeholder: "12/1/24",
   },
   {
     label: "Title of Opportunity*",
-    type: "select",
+    type: "input",
     name: "Title of Opportunity",
-    items: ["ABC company", "123 company", "Other"],
+    placeholder: "abc.co/jobs",
   },
   {
     label: "Opportunity URL*",
-    type: "select",
+    type: "input",
     name: "Opportunity URL",
-    items: ["ABC company", "123 company", "Other"],
+    placeholder: "abc.co",
   },
   {
     label: "Opportunity Description*",
@@ -50,54 +65,48 @@ const fields = [
 ];
 
 export default function SubmitOpportunity() {
-  {
-    /*
-        Todo: 12/14
-        - fix outline form bug
-        - fix font color gray
-        */
-  }
   return (
-    <Fieldset.Root pt="120px" pb="274px" align="center">
-      <Stack>
-        <Fieldset.Legend>
-          <h1 className="text-3xl font-bold">Submit Opportunities</h1>
-        </Fieldset.Legend>
-        <h2 className="font-extrabold">
-          Highlight opportunities you want to share with our student network.
-        </h2>
+    <Fieldset.Root pt="120px" pb="274px">
+      <Stack textAlign="center" align="center">
+        <Heading size="5xl">Submit Opportunities</Heading>
+        <Box w="1/3" textAlign="center">
+          <Heading>
+            Highlight opportunities you want to share with our student network.
+          </Heading>
+        </Box>
       </Stack>
 
       <Center>
         <Fieldset.Content w="1/2" align="center" px="4rem">
           {fields.map((field, index) => (
             <Field label={field.label} key={index}>
-              {field.text ? <p className="font-light">{field.text}</p> : null}
+              {field.text ? (
+                <Text mb="3" fontSize="md" color="fg.muted">
+                  {field.text}
+                </Text>
+              ) : null}
               {field.type === "select" ? (
-                <NativeSelectRoot variant="outline">
-                  <NativeSelectField
-                    name={field.name}
-                    items={field.items}
-                    variant="outline"
-                    // color="primaryGray"
-                  />
+                <NativeSelectRoot>
+                  <NativeSelectField name={field.name} items={field.items} />
                 </NativeSelectRoot>
               ) : field.type === "textarea" ? (
-                <Textarea
-                  name={field.name}
-                  placeholder={field.placeholder}
-                  variant="outline"
-                />
-              ) : null}
+                <Textarea name={field.name} placeholder={field.placeholder} />
+              ) : field.type === "input" ? (
+                // <Field name="">
+                <Input name={field.name} placeholder={field.placeholder} />
+              ) : // </Field>
+              null}
             </Field>
           ))}
 
           <Stack direction="row">
             <Field label="Start Date">
-              <Input name="Start Date" placeholder="12/1/24" />
+              <Text textStyle="sm">First day to apply or register</Text>
+              <Input type="date" />
             </Field>
             <Field label="End Date">
-              <Input name="End Date" placeholder="12/31/24" />
+              <Text textStyle="sm">Last day to apply or register</Text>
+              <Input type="date" />
             </Field>
           </Stack>
 
