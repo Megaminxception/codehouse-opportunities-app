@@ -15,12 +15,12 @@ const OpportunityContainer = ({
 }
 ) => {
     return (
-        <Box py={8} px={8} className="shadow-md border-solid border-[1px] border-[#B3B3B3] border-[filter: blur(4px)]">
-            <OpportunitiesLogo type={opportunityType} />
-            <Box className="place-items-center">
+        <Box py={8} className="shadow-md border-solid border-[1px] border-[#B3B3B3] border-[filter: blur(4px)] w-[17rem] pl-10">
+            <Box className="">
+                <OpportunitiesLogo type={opportunityType} />
                 <OpportunityDetails opportunityName={opportunityName} opportunityType={opportunityType} partner={partner} />
-                <OpportunityModel />
             </Box>
+            <OpportunityModel />
         </Box>
     )
 };
