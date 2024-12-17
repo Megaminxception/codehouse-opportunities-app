@@ -2,6 +2,7 @@ import work from "./assets/work.ico";
 import Award from "./assets/Award.ico";
 import zap from "./assets/Zap.ico";
 import Image from "next/image";
+import { Box } from "@chakra-ui/react";
 
 const OpportunityLogo = ({ type }) => {
   // Use a conditional statement outside the JSX
@@ -22,8 +23,11 @@ const OpportunityLogo = ({ type }) => {
     altText = "others";
   }
 
-  return <Image src={logo} alt={altText} />
-   
+  return (
+    <Box paddingBottom={5}>
+      <Image src={logo} alt={altText} className="size-9" />
+    </Box>
+  )
 };
 
 export default OpportunityLogo;
