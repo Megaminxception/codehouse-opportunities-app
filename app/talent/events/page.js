@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Flex, Text, Input, Box } from "@chakra-ui/react";
+import { Flex, Text, Input, Box, Container } from "@chakra-ui/react";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 
@@ -9,6 +9,15 @@ export default function Events() {
   const [searchValue, setSearchValue] = useState("");
   const [hosts, setHosts] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  // State to store the selected date
+  const [selectedDate, setSelectedDate] = useState(new Date());
+
+  // Function to update the state when a date is selected
+  const handleDateChange = (date) => {
+    setSelectedDate(date);
+    console.log('Selected date:', date);
+  };
 
   const AIRTABLE_API_KEY = process.env.NEXT_PUBLIC_AIRTABLE_API_KEY;
   const BASE_ID = process.env.NEXT_PUBLIC_AIRTABLE_BASE_ID;
@@ -193,7 +202,17 @@ export default function Events() {
           </Box>
         </Flex>
       </Box>
-      <Calendar></Calendar>
+      <Container>
+          <div>
+          {/* Calendar component with onChange handler */}
+          <Calendar 
+            onChange={handleDateChange} 
+            value={selectedDate} 
+          />
+          {/* Display the selected date */}
+          <p>Selected Date: {selectedDate.toDateString()}</p>
+        </div>
+          </Container>
     </Flex>
   );
 }

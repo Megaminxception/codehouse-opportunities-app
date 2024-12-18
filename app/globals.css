@@ -19,3 +19,14 @@ body {
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Calendar CSS */
+abbr {
+  color: black;
+}
+
+div {
+  color: black;
+  width: auto;
+  height: auto;
+}
