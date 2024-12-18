@@ -21,7 +21,7 @@ body {
 }
 
 /* Calendar CSS */
-abbr {
+abbr.react-calendar__tile--active {
   color: black;
 }
 
@@ -30,3 +30,16 @@ div {
   width: auto;
   height: auto;
 }
+
+.react-calendar__tile--active {
+  background-color: #6F0010 !important;
+  border-radius: 50%;
+}
+
+/* Border won't show */
+.react-calendar__tile--now {
+  /* background-color: seashell !important; */
+  border-color: #6F0010;
+  border-radius: 50%;
+}
+

@@ -2,10 +2,9 @@
 import { Box, Center, Container, Flex } from "@chakra-ui/react";
 import Calendar from 'react-calendar';
 import { useState } from 'react'
-// import 'react-calendar/dist/Calendar.css';
+import 'react-calendar/dist/Calendar.css';
 
 export default function Events() {
-
   // State to store the selected date
   const [selectedDate, setSelectedDate] = useState(new Date());
 
@@ -16,22 +15,15 @@ export default function Events() {
   };
   
   return ( 
-    <>
-      <Flex bg="primaryWhite" minH="100vh" justify="center" align="center">
-        {/* <p className="text-black">events page</p> */}
+      <Flex bg="primaryWhite" minH="100vh" justify="center" align="center" pb="9rem">
         <Container>
-          <div>
           {/* Calendar component with onChange handler */}
           <Calendar 
             onChange={handleDateChange} 
-            value={selectedDate} 
+            value={selectedDate}
           />
-          {/* Display the selected date */}
           <p>Selected Date: {selectedDate.toDateString()}</p>
-        </div>
-          </Container>
+        </Container>
       </Flex>
-
-    </>
   );
 };
