@@ -31,7 +31,7 @@ export default function Events() {
         }
 
         const eventsData = await eventsResponse.json();
-        console.log("Events Data:", eventsData);
+
 
         // Collect unique Host IDs from Events
         const hostIds = new Set();
@@ -42,7 +42,7 @@ export default function Events() {
           }
         });
 
-        console.log("Unique Host IDs:", hostIds);
+
 
         // Fetch Partners Table to get Host Names
         const partnersResponse = await fetch(
@@ -59,7 +59,7 @@ export default function Events() {
         }
 
         const partnersData = await partnersResponse.json();
-        console.log("Partners Data:", partnersData);
+        
 
         // Map Partner Names by ID
         const partnerMap = {};
@@ -67,7 +67,7 @@ export default function Events() {
           partnerMap[record.id] = record.fields["Partner Name"];
         });
 
-        console.log("Partner Map:", partnerMap);
+      
 
         // Match Event Host IDs to Partner Names
         const uniqueHosts = Array.from(hostIds)
