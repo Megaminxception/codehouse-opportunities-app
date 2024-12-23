@@ -1,3 +1,4 @@
+"client";
 import {
   Fieldset,
   Stack,
@@ -21,12 +22,12 @@ const fields = [
   {
     label: "Partner*",
     text: (
-      <Text textStyle="sm">
+      <Box textStyle="sm">
         Not seeing your organization?{" "}
-        <Text as="span" color="#900B09" cursor="pointer">
+        <span style={{ color: "#900B09", cursor: "pointer" }}>
           Register here.
-        </Text>
-      </Text>
+        </span>
+      </Box>
     ),
     type: "select",
     name: "Partner",
@@ -81,9 +82,9 @@ export default function SubmitOpportunity() {
           {fields.map((field, index) => (
             <Field label={field.label} key={index}>
               {field.text ? (
-                <Text mb="3" fontSize="md" color="fg.muted">
+                <Box mb="3" fontSize="md" color="fg.muted">
                   {field.text}
-                </Text>
+                </Box>
               ) : null}
               {field.type === "select" ? (
                 <NativeSelectRoot>
@@ -92,10 +93,8 @@ export default function SubmitOpportunity() {
               ) : field.type === "textarea" ? (
                 <Textarea name={field.name} placeholder={field.placeholder} />
               ) : field.type === "input" ? (
-                // <Field name="">
                 <Input name={field.name} placeholder={field.placeholder} />
-              ) : // </Field>
-              null}
+              ) : null}
             </Field>
           ))}
 
