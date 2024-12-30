@@ -1,21 +1,22 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Flex, Text, Input, Box } from "@chakra-ui/react";
+import { Flex, Text, Input, Box, Button } from "@chakra-ui/react";
 
 export default function Events() {
   const [searchValue, setSearchValue] = useState("");
   const [hosts, setHosts] = useState([]);
+  const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const AIRTABLE_API_KEY = process.env.NEXT_PUBLIC_AIRTABLE_API_KEY;
   const BASE_ID = process.env.NEXT_PUBLIC_AIRTABLE_BASE_ID;
 
   useEffect(() => {
-    async function fetchHosts() {
+    async function fetchData() {
       try {
-        console.log("Fetching hosts...");
-        
+        console.log("Fetching events and hosts...");
+
         // Fetch Events Table
         const eventsResponse = await fetch(
           `https://api.airtable.com/v0/${BASE_ID}/Events`,
@@ -31,20 +32,20 @@ export default function Events() {
         }
 
         const eventsData = await eventsResponse.json();
+        setEvents(
+          eventsData.records.map((record) => ({
+            id: record.id,
+            EventName: record.fields["Event Name"],
+            EventDate: record.fields["Event Start Date "],
+            EventEndTime: record.fields["Event End Date "],
+            EventDescription: record.fields["Event Description "],
+            EventLocation: record.fields["Event Location "],
+            EventHost: record.fields["Host (Link from Partners)"]?.[0] || "Unknown",
+            EventURL: record.fields["Event URL"],
+          }))
+        );
 
-
-        // Collect unique Host IDs from Events
-        const hostIds = new Set();
-        eventsData.records.forEach((record) => {
-          const hostField = record.fields["Host (Link from Partners)"];
-          if (hostField) {
-            hostField.forEach((id) => hostIds.add(id));
-          }
-        });
-
-
-
-        // Fetch Partners Table to get Host Names
+        // Fetch Hosts
         const partnersResponse = await fetch(
           `https://api.airtable.com/v0/${BASE_ID}/Partners`,
           {
@@ -59,32 +60,28 @@ export default function Events() {
         }
 
         const partnersData = await partnersResponse.json();
-        
-
-        // Map Partner Names by ID
         const partnerMap = {};
         partnersData.records.forEach((record) => {
           partnerMap[record.id] = record.fields["Partner Name"];
         });
 
-      
+        setHosts(Object.values(partnerMap));
 
-        // Match Event Host IDs to Partner Names
-        const uniqueHosts = Array.from(hostIds)
-          .map((id) => partnerMap[id])
-          .filter(Boolean); // Remove undefined values
-
-        console.log("Final Host Names:", uniqueHosts);
-
-        setHosts(uniqueHosts);
+        // Map Event Hosts
+        setEvents((prevEvents) =>
+          prevEvents.map((event) => ({
+            ...event,
+            EventHost: partnerMap[event.EventHost] || "Unknown Host",
+          }))
+        );
       } catch (error) {
-        console.error("Error fetching hosts:", error);
+        console.error("Error fetching data:", error);
       } finally {
         setLoading(false);
       }
     }
 
-    fetchHosts();
+    fetchData();
   }, []);
 
   return (
@@ -97,7 +94,7 @@ export default function Events() {
       pt={24}
       fontFamily="var(--font-mulish)"
     >
-  
+      {/* Header Section */}
       <Box mb={8} textAlign="center">
         <Text as="h1" fontSize="34px" fontWeight="900" color="black">
           Events
@@ -190,6 +187,103 @@ export default function Events() {
           </Box>
         </Flex>
       </Box>
+
+      {events.map((event) => {
+  const startDate = event.EventDate ? new Date(event.EventDate) : null;
+
+  const formattedDate = startDate
+    ? `${startDate.toLocaleString("default", { month: "short" })} ${startDate.getDate()}`
+    : "N/A";
+
+  return (
+    <Box
+      key={event.id}
+      bg="white"
+      borderRadius="sm"
+      boxShadow="sm"
+      p={4} 
+      mb={4} 
+      width="90%"
+      maxW="700px"
+      mx="auto"
+      display="flex"
+      alignItems="center"
+      minH="100px"
+    >
+     {/* Date Circle */}
+<Box
+  bg="gray.800"
+  color="white"
+  textAlign="center"
+  borderRadius="full"
+  w="60px"
+  h="60px"
+  display="flex"
+  flexDirection="column"
+  justifyContent="center"
+  alignItems="center"
+  mr={5}
+>
+  {startDate ? (
+    <>
+      <Text fontSize="xl" fontWeight="bold" lineHeight="1">
+        {startDate.getDate()}
+      </Text>
+      <Text fontSize="sm" fontWeight="bold" textTransform="uppercase" mt={0.5}>
+        {startDate.toLocaleString("default", { month: "short" })}
+      </Text>
+    </>
+  ) : (
+    <>
+      <Text fontSize="xl" fontWeight="bold">TBD</Text>
+    </>
+  )}
+</Box>
+
+
+   {/* Event Details */}
+<Flex flex="1" align="flex-start" direction="column">
+  {/* Event Title */}
+  <Text fontWeight="bold" fontSize="lg" mb={0.5} color="black" lineHeight="1.2">
+    {event.EventName}
+  </Text>
+
+  {/* Event Date */}
+  <Text fontSize="sm" color="black" mb={0.5} lineHeight="1.2">
+    {formattedDate}
+  </Text>
+
+  {/* Event Host */}
+  <Text fontSize="sm" color="black" mb={0.5} lineHeight="1.2">
+   {event.EventHost}
+  </Text>
+</Flex>
+
+      {/* Event Description */}
+      <Box maxW="45%" pl={4} pr={4}>
+        <Text fontSize="sm" color="gray.500" lineHeight="1.4">
+          {event.EventDescription}
+        </Text>
+      </Box>
+
+      {/* Attend Button */}
+      <Button
+        bg="gray.800"
+        color="white"
+        px={4}
+        py={2}
+        fontSize="sm"
+        ml={4}
+        borderRadius="sm"
+        _hover={{ bg: "gray.700" }}
+      >
+        Attend
+      </Button>
+    </Box>
+  );
+})}
+
+
     </Flex>
   );
 }
