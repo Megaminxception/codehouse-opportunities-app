@@ -22,77 +22,129 @@ export default function Events() {
   const AIRTABLE_API_KEY = process.env.NEXT_PUBLIC_AIRTABLE_API_KEY;
   const BASE_ID = process.env.NEXT_PUBLIC_AIRTABLE_BASE_ID;
 
-  useEffect(() => {
-    async function fetchHosts() {
-      try {
-        console.log("Fetching hosts...");
+  // useEffect(() => {
+  //   async function fetchHosts() {
+  //     try {
+  //       console.log("Fetching hosts...");
 
-        // Fetch Events Table
-        const eventsResponse = await fetch(
-          `https://api.airtable.com/v0/${BASE_ID}/Events`,
-          {
-            headers: {
-              Authorization: `Bearer ${AIRTABLE_API_KEY}`,
-            },
-          }
-        );
+  //       // Fetch Events Table
+  //       const eventsResponse = await fetch(
+  //         `https://api.airtable.com/v0/${BASE_ID}/Events`,
+  //         {
+  //           headers: {
+  //             Authorization: `Bearer ${AIRTABLE_API_KEY}`,
+  //           },
+  //         }
+  //       );
 
-        if (!eventsResponse.ok) {
-          throw new Error(`Error fetching events: ${eventsResponse.status}`);
-        }
+  //       if (!eventsResponse.ok) {
+  //         throw new Error(`Error fetching events: ${eventsResponse.status}`);
+  //       }
 
-        const eventsData = await eventsResponse.json();
+  //       const eventsData = await eventsResponse.json();
 
-        // Collect unique Host IDs from Events
-        const hostIds = new Set();
-        eventsData.records.forEach((record) => {
-          const hostField = record.fields["Host (Link from Partners)"];
-          if (hostField) {
-            hostField.forEach((id) => hostIds.add(id));
-          }
-        });
+  //       // Collect unique Host IDs from Events
+  //       const hostIds = new Set();
+  //       eventsData.records.forEach((record) => {
+  //         const hostField = record.fields["Host (Link from Partners)"];
+  //         if (hostField) {
+  //           hostField.forEach((id) => hostIds.add(id));
+  //         }
+  //       });
 
-        // Fetch Partners Table to get Host Names
-        const partnersResponse = await fetch(
-          `https://api.airtable.com/v0/${BASE_ID}/Partners`,
-          {
-            headers: {
-              Authorization: `Bearer ${AIRTABLE_API_KEY}`,
-            },
-          }
-        );
+  //       // Fetch Partners Table to get Host Names
+  //       const partnersResponse = await fetch(
+  //         `https://api.airtable.com/v0/${BASE_ID}/Partners`,
+  //         {
+  //           headers: {
+  //             Authorization: `Bearer ${AIRTABLE_API_KEY}`,
+  //           },
+  //         }
+  //       );
 
-        if (!partnersResponse.ok) {
-          throw new Error(
-            `Error fetching partners: ${partnersResponse.status}`
-          );
-        }
+  //       if (!partnersResponse.ok) {
+  //         throw new Error(
+  //           `Error fetching partners: ${partnersResponse.status}`
+  //         );
+  //       }
 
-        const partnersData = await partnersResponse.json();
+  //       const partnersData = await partnersResponse.json();
 
-        // Map Partner Names by ID
-        const partnerMap = {};
-        partnersData.records.forEach((record) => {
-          partnerMap[record.id] = record.fields["Partner Name"];
-        });
+  //       // Map Partner Names by ID
+  //       const partnerMap = {};
+  //       partnersData.records.forEach((record) => {
+  //         partnerMap[record.id] = record.fields["Partner Name"];
+  //       });
 
-        // Match Event Host IDs to Partner Names
-        const uniqueHosts = Array.from(hostIds)
-          .map((id) => partnerMap[id])
-          .filter(Boolean); // Remove undefined values
+  //       // Match Event Host IDs to Partner Names
+  //       const uniqueHosts = Array.from(hostIds)
+  //         .map((id) => partnerMap[id])
+  //         .filter(Boolean); // Remove undefined values
 
-        console.log("Final Host Names:", uniqueHosts);
+  //       console.log("Final Host Names:", uniqueHosts);
 
-        setHosts(uniqueHosts);
-      } catch (error) {
-        console.error("Error fetching hosts:", error);
-      } finally {
-        setLoading(false);
+  //       setHosts(uniqueHosts);
+  //     } catch (error) {
+  //       console.error("Error fetching hosts:", error);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   }
+
+  //   fetchHosts();
+  // }, []);
+
+  const fetchEvents = async (url, options = {}) => {
+    try {
+      const headers = {
+        'Authorization': `Bearer ${AIRTABLE_API_KEY}`,
+        'Content-Type': 'application/json',
+        ...options.headers, // Merge with any existing headers passed in options
+      };
+
+      const response = await fetch(url, { ...options, headers });
+  
+      // Throw an error if the response was not 2xx
+      if (!response.ok) {
+        throw new Error(`Fetch failed. ${response.status} ${response.statusText}`)
       }
+  
+      // Check the content type to determine how to parse the response
+      const isJson = (response.headers.get('content-type') || '').includes('application/json')
+      let data = isJson ? await response.json() : await response.text()
+  
+      // return a tuple: [data, error]
+      return [data, null]; 
     }
+    catch (error) {
+      // if there was an error, log it and return null
+      console.error(error.message);
+  
+      // return a tuple: [data, error]
+      return [null, error]; 
+    }
+  }
 
-    fetchHosts();
-  }, []);
+  fetchEvents(`https://api.airtable.com/v0/${BASE_ID}/Events`)
+  .then(([data, error]) => {
+    if (error) {
+      console.error('Error fetching events:', error);
+    } else {
+      // Figure out how to loop through records array
+      console.log('Fetched Data:', data);
+      console.log('Fetched Events:', data.records);
+      console.log('Fetched Creation Date and Time:', data.records[0].createdTime);
+      console.log('Fetched Description:', data.records[0].fields['Event Description ']);
+      console.log('Fetched End Date:', data.records[0].fields['Event End Date']);
+      console.log('Fetched Location:', data.records[0].fields['Event Location ']);
+      console.log('Fetched Name:', data.records[0].fields['Event Name']);
+      console.log('Fetched Start Date:', data.records[0].fields['Event Start Date ']);
+      console.log('Fetched Status:', data.records[0].fields['Event Status']);
+      console.log('Fetched URL:', data.records[0].fields['Event URL ']);
+      console.log('Fetched Host:', data.records[0].fields['Host (Link from Partners)'][0]);
+      console.log('Fetched Event ID:', data.records[0].id);
+    }
+  });
 
   return (
     <Flex
