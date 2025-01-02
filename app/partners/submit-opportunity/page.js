@@ -1,4 +1,5 @@
-"client";
+"use client";
+import { useState, useEffect } from "react";
 import {
   Fieldset,
   Stack,
@@ -16,56 +17,81 @@ import {
   NativeSelectField,
   NativeSelectRoot,
 } from "@/components/ui/native-select";
+import Airtable from "airtable";
+import apiKey from "@/Airtable.configure";
+// const partnerItems = [];
+// const OppTypeItems = [];
+const airtable = new Airtable({ apiKey });
 
-const fields = [
-  // this would be replaced with actual data from airtable
-  {
-    label: "Partner*",
-    text: (
-      <Box textStyle="sm">
-        Not seeing your organization?{" "}
-        <span style={{ color: "#900B09", cursor: "pointer" }}>
-          Register here.
-        </span>
-      </Box>
-    ),
-    type: "select",
-    name: "Partner",
-    items: ["ABC company", "123 company", "Other"],
-  },
-  {
-    label: "Opportunity Type*",
-    type: "select",
-    name: "Opportunity Type",
-    items: ["Event", "123 company", "Other"],
-  },
-  {
-    label: "Time and Date of Event",
-    type: "input",
-    name: "Time and Date of Event*",
-    placeholder: "12/1/24",
-  },
-  {
-    label: "Title of Opportunity*",
-    type: "input",
-    name: "Title of Opportunity",
-    placeholder: "abc.co/jobs",
-  },
-  {
-    label: "Opportunity URL*",
-    type: "input",
-    name: "Opportunity URL",
-    placeholder: "abc.co",
-  },
-  {
-    label: "Opportunity Description*",
-    type: "textarea",
-    name: "Opportunity Description",
-    placeholder: "We're Hiring!",
-  },
-];
+const base = airtable.base("app1V5WXWoHT2QGTu");
 
 export default function SubmitOpportunity() {
+  const [partnerItems, setPartnerItems] = useState([]);
+  useEffect(() => {
+    const fetchPartners = () => {
+      base("Opportunities")
+        .select()
+        .eachPage((records, fetchNextPage) => {
+          records.forEach((record) => {
+            if (record.fields["Opportunity Name"]) {
+              setPartnerItems(() =>
+                partnerItems.push(record.fields["Opportunity Name"])
+              );
+            }
+          });
+          fetchNextPage();
+        });
+    };
+
+    fetchPartners();
+  }, []);
+  const fields = [
+    {
+      label: "Partner*",
+      text: (
+        <Box textStyle="sm">
+          Not seeing your organization?{" "}
+          <span style={{ color: "#900B09", cursor: "pointer" }}>
+            Register here.
+          </span>
+        </Box>
+      ),
+      type: "select",
+      name: "Partner",
+      items: partnerItems,
+    },
+    {
+      label: "Opportunity Type*",
+      type: "select",
+      name: "Opportunity Type",
+      items: ["Event", "123 company", "Other"],
+    },
+    {
+      label: "Time and Date of Event",
+      type: "input",
+      name: "Time and Date of Event*",
+      placeholder: "12/1/24",
+    },
+    {
+      label: "Title of Opportunity*",
+      type: "input",
+      name: "Title of Opportunity",
+      placeholder: "abc.co/jobs",
+    },
+    {
+      label: "Opportunity URL*",
+      type: "input",
+      name: "Opportunity URL",
+      placeholder: "abc.co",
+    },
+    {
+      label: "Opportunity Description*",
+      type: "textarea",
+      name: "Opportunity Description",
+      placeholder: "We're Hiring!",
+    },
+  ];
+
   return (
     <Fieldset.Root pt="120px" pb="274px">
       <Stack textAlign="center" align="center">
@@ -100,11 +126,15 @@ export default function SubmitOpportunity() {
 
           <Stack direction="row">
             <Field label="Start Date">
-              <Text textStyle="sm">First day to apply or register</Text>
+              <Text textStyle="sm" color="fg.muted">
+                First day to apply or register
+              </Text>
               <Input type="date" />
             </Field>
             <Field label="End Date">
-              <Text textStyle="sm">Last day to apply or register</Text>
+              <Text textStyle="sm" color="fg.muted">
+                Last day to apply or register*
+              </Text>
               <Input type="date" />
             </Field>
           </Stack>
