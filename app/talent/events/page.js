@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import EventItem from "@/components/EventItem";
 import { Flex, Text, Input, Box, Container, Center } from "@chakra-ui/react";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
@@ -8,6 +9,7 @@ import "react-calendar/dist/Calendar.css";
 export default function Events() {
   const [searchValue, setSearchValue] = useState("");
   const [hosts, setHosts] = useState([]);
+  const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
 
   // State to store the selected date
@@ -23,9 +25,9 @@ export default function Events() {
   const BASE_ID = process.env.NEXT_PUBLIC_AIRTABLE_BASE_ID;
 
   useEffect(() => {
-    async function fetchHosts() {
+    async function fetchData() {
       try {
-        console.log("Fetching hosts...");
+        console.log("Fetching events and hosts...");
 
         // Fetch Events Table
         const eventsResponse = await fetch(
@@ -42,17 +44,20 @@ export default function Events() {
         }
 
         const eventsData = await eventsResponse.json();
+        setEvents(
+          eventsData.records.map((record) => ({
+            id: record.id,
+            EventName: record.fields["Event Name"],
+            EventDate: record.fields["Event Start Date "],
+            EventEndTime: record.fields["Event End Date "],
+            EventDescription: record.fields["Event Description "],
+            EventLocation: record.fields["Event Location "],
+            EventHost: record.fields["Host (Link from Partners)"]?.[0] || "Unknown",
+            EventURL: record.fields["Event URL"],
+          }))
+        );
 
-        // Collect unique Host IDs from Events
-        const hostIds = new Set();
-        eventsData.records.forEach((record) => {
-          const hostField = record.fields["Host (Link from Partners)"];
-          if (hostField) {
-            hostField.forEach((id) => hostIds.add(id));
-          }
-        });
-
-        // Fetch Partners Table to get Host Names
+        // Fetch Hosts
         const partnersResponse = await fetch(
           `https://api.airtable.com/v0/${BASE_ID}/Partners`,
           {
@@ -70,28 +75,28 @@ export default function Events() {
 
         const partnersData = await partnersResponse.json();
 
-        // Map Partner Names by ID
         const partnerMap = {};
         partnersData.records.forEach((record) => {
           partnerMap[record.id] = record.fields["Partner Name"];
         });
 
-        // Match Event Host IDs to Partner Names
-        const uniqueHosts = Array.from(hostIds)
-          .map((id) => partnerMap[id])
-          .filter(Boolean); // Remove undefined values
+        setHosts(Object.values(partnerMap));
 
-        console.log("Final Host Names:", uniqueHosts);
-
-        setHosts(uniqueHosts);
+        // Map Event Hosts
+        setEvents((prevEvents) =>
+          prevEvents.map((event) => ({
+            ...event,
+            EventHost: partnerMap[event.EventHost] || "Unknown Host",
+          }))
+        );
       } catch (error) {
-        console.error("Error fetching hosts:", error);
+        console.error("Error fetching data:", error);
       } finally {
         setLoading(false);
       }
     }
 
-    fetchHosts();
+    fetchData();
   }, []);
 
   return (
@@ -206,6 +211,11 @@ export default function Events() {
           <Calendar onChange={handleDateChange} value={selectedDate} />
         </Center>
       </Box>
+
+      {/* Event Items */}
+      {events.map((event) => (
+        <EventItem key={event.id} event={event} />
+      ))}
     </Flex>
   );
 }
