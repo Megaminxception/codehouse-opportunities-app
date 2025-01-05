@@ -151,9 +151,15 @@ export default function Events() {
   }, []);
 
   // Rendered Information
-  // const selectedDate = 
-  const filteredEvents = events.filter(e => e.date === selectedDate)
-  // console.log(filteredEvents)
+  const filteredEvents = events.filter((event) => {
+    // Create a regex to match the selectedDate
+    const regex = new RegExp(`^${selectedDate.split("T")[0]}$`);
+  
+    // Check if the event start date matches the selectedDate
+    return regex.test(event.startDate);
+  });
+  
+  console.log("Filtered Events:", filteredEvents);
 
   return (
     <Flex
