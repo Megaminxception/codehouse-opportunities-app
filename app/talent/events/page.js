@@ -18,6 +18,7 @@ export default function Events() {
 
   // Function to update the state when a date is selected
   const handleDateChange = (date) => {
+    date = date.toISOString();
     setSelectedDate(date);
     console.log("Selected date:", date);
   };
@@ -152,7 +153,7 @@ export default function Events() {
   // Rendered Information
   // const selectedDate = 
   const filteredEvents = events.filter(e => e.date === selectedDate)
-  console.log(filteredEvents)
+  // console.log(filteredEvents)
 
   return (
     <Flex
