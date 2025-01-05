@@ -132,20 +132,15 @@ export default function Events() {
       if (error) {
         console.error('Error fetching events:', error);
       } else {
-        // Figure out how to loop through records array
-        console.log('Fetched Data:', data);
-        // console.log('Fetched Events:', data.records);
-        console.log('Fetched createdTime Property:', data.records[0].createdTime);
-        console.log('Fetched "Created at " Property:', data.records[0].fields['Created at ']);
-        // console.log('Fetched Description:', data.records[0].fields['Event Description ']);
-        console.log('Fetched End Date:', data.records[0].fields['Event End Date']);
-        // console.log('Fetched Location:', data.records[0].fields['Event Location ']);
-        // console.log('Fetched Name:', data.records[0].fields['Event Name']);
-        console.log('Fetched Start Date:', data.records[0].fields['Event Start Date ']);
-        // console.log('Fetched Status:', data.records[0].fields['Event Status']);
-        // console.log('Fetched URL:', data.records[0].fields['Event URL ']);
-        // console.log('Fetched Host:', data.records[0].fields['Host (Link from Partners)'][0]);
-        // console.log('Fetched Event ID:', data.records[0].id);
+        // Map through records array and console log each record and field info
+        data.records.map((record, index) => {
+          console.log(`Record ${index + 1}:`, record);
+          console.log(`Record ${index + 1} ID:`, record.id);
+          console.log(`Record ${index + 1} createdTime:`, record.createdTime);
+          for (const [key, value] of Object.entries(record.fields)) {
+            console.log(`${key}:`, value);
+          }
+        });
       }
     });
   }, []);
