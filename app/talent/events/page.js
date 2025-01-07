@@ -2,7 +2,19 @@
 
 import { useState, useEffect } from "react";
 import EventItem from "@/components/EventItem";
-import { Flex, Text, Input, Box, Container, Center } from "@chakra-ui/react";
+import {
+  Flex,
+  Text,
+  Input,
+  Box,
+  Container,
+  Center,
+  IconButton,
+  Icon,
+} from "@chakra-ui/react";
+import { Button } from "@/components/ui/button";
+import CalendarSvg from "@/components/CalendarSvg";
+import ListSvg from "@/components/ListSvg";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 
@@ -15,10 +27,20 @@ export default function Events() {
   // State to store the selected date
   const [selectedDate, setSelectedDate] = useState(new Date());
 
+  //State to toggle color of List and Calendar
+  const [calendarSelected, setCalendarSelected] = useState(true);
+  const [listSelected, setListSelected] = useState(false);
+
   // Function to update the state when a date is selected
   const handleDateChange = (date) => {
     setSelectedDate(date);
     console.log("Selected date:", date);
+  };
+
+  //Function to handle the changing of calendar and list
+  const handleCalendarListSwap = (e) => {
+    setCalendarSelected((pre) => !pre);
+    setListSelected((pre) => !pre);
   };
 
   const AIRTABLE_API_KEY = process.env.NEXT_PUBLIC_AIRTABLE_API_KEY;
@@ -52,7 +74,8 @@ export default function Events() {
             EventEndTime: record.fields["Event End Date "],
             EventDescription: record.fields["Event Description "],
             EventLocation: record.fields["Event Location "],
-            EventHost: record.fields["Host (Link from Partners)"]?.[0] || "Unknown",
+            EventHost:
+              record.fields["Host (Link from Partners)"]?.[0] || "Unknown",
             EventURL: record.fields["Event URL"],
           }))
         );
@@ -166,7 +189,6 @@ export default function Events() {
             </Box>
           )}
         </Box>
-
         {/* Host Filter */}
         <Flex direction="column" align="center">
           <Box width="200px" textAlign="left">
@@ -205,6 +227,17 @@ export default function Events() {
               )}
             </Box>
           </Box>
+        </Flex>
+        {/*Events toggle */}
+        <Flex flexDirection="row" gap={"none"}>
+          <IconButton onClick={handleCalendarListSwap} size="md">
+            <Icon fontSize="20px">
+              <CalendarSvg red={calendarSelected} />
+            </Icon>
+          </IconButton>
+          <IconButton onClick={handleCalendarListSwap}>
+            <ListSvg red={listSelected} />
+          </IconButton>
         </Flex>
         <Center>
           {/* Calendar component with onChange handler */}
