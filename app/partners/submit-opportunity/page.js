@@ -19,30 +19,35 @@ import {
 } from "@/components/ui/native-select";
 import Airtable from "airtable";
 import apiKey from "@/Airtable.configure";
-// const partnerItems = [];
-// const OppTypeItems = [];
+import { record } from "zod";
 const airtable = new Airtable({ apiKey });
 
 const base = airtable.base("app1V5WXWoHT2QGTu");
 
 export default function SubmitOpportunity() {
   const [partnerItems, setPartnerItems] = useState([]);
+  const [OppType, setOppType] = useState([]);
   useEffect(() => {
     const fetchPartners = () => {
       base("Opportunities")
         .select()
         .eachPage((records, fetchNextPage) => {
-          records.forEach((record) => {
-            if (record.fields["Opportunity Name"]) {
-              setPartnerItems(() =>
-                partnerItems.push(record.fields["Opportunity Name"])
-              );
-            }
+          setPartnerItems((prev) => [
+            ...prev,
+            ...records
+              .filter((record) => record.fields["Opportunity Name"])
+              .map((record) => record.fields["Opportunity Name"]),
+          ]);
+          setOppType((prev) => {
+            const newItems = records
+              .filter((record) => record.fields["Opportunity Type"])
+              .map((record) => record.fields["Opportunity Type"][0]);
+
+            return Array.from(new Set([...prev, ...newItems]));
           });
           fetchNextPage();
         });
     };
-
     fetchPartners();
   }, []);
   const fields = [
@@ -64,7 +69,7 @@ export default function SubmitOpportunity() {
       label: "Opportunity Type*",
       type: "select",
       name: "Opportunity Type",
-      items: ["Event", "123 company", "Other"],
+      items: OppType,
     },
     {
       label: "Time and Date of Event",
