@@ -1,54 +1,27 @@
-"use client";
-
-import { For, HStack } from "@chakra-ui/react"
+import { Modal } from 'react-responsive-modal';
+import 'react-responsive-modal/styles.css';
 import { Button } from "@/components/ui/button"
-import {
-  DialogActionTrigger,
-  DialogBody,
-  DialogCloseTrigger,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogRoot,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
+import Link from 'next/link';
+import {Flex} from "@chakra-ui/react";
 
-const Demo = () => {
+export const PartnerModal = ({ open, onCloseModal, title, partnerTypes, tier, involvedInPrograms, location, about, website }) => {
   return (
-    <HStack wrap="wrap" gap="4" bgColor="red.200">
-          <DialogRoot
-            key={"center"}
-            placement="center"
-            motionPreset="slide-in-bottom"
-          >
-            <DialogTrigger asChild>
-              <Button variant="outline">View Profile</Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Dialog Title</DialogTitle>
-              </DialogHeader>
-              <DialogBody>
-                <p>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed
-                  do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                </p>
-              </DialogBody>
-              <DialogFooter>
-                <DialogActionTrigger asChild>
-                  <Button variant="outline">Cancel</Button>
-                </DialogActionTrigger>
-                <Button>Save</Button>
-              </DialogFooter>
-              <DialogCloseTrigger />
-            </DialogContent>
-          </DialogRoot>
-    </HStack>
+    <Flex>
+      <Modal open={open} onClose={onCloseModal} center>
+        <h2>{title}</h2>
+        <p>{partnerTypes}</p>
+        <p>{tier}</p>
+        <p>{involvedInPrograms}</p>
+        <p>{location}</p>
+        <p>{about}</p>
+        <p>{website}</p>
+        <Link href="/talent/opportunities">
+          <Button bg="#2C2C2C" color="white">
+            View Opportunites
+          </Button>
+        </Link>
+      </Modal>
+    </Flex>
   )
 }
 
-export default function PartnerModal() {
-
-  return <Demo/>
-}

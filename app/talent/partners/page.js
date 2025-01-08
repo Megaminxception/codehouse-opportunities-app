@@ -1,11 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import PartnerModal from "@/components/partnerModal";
+import {PartnerModal} from "@/components/partnerModal";
 
 import {
-  
-  Stack,
+
+  Flex,
   Center,
   Textarea,
   Input,
@@ -15,15 +15,14 @@ import {
 } from "@chakra-ui/react";
 
 export default function Partners() {
+  const [isPartnerModalOpen, setPartnerModalOpen] = useState(false);
+  const onOpenModal = () => setPartnerModalOpen(true);
+  const onCloseModal = () => setPartnerModalOpen(false);
+
   return (
-    <Stack textAlign="center" align="center" pt="120px" pb="274px">
-          
-            <Box textAlign="center">
-              {/* <Heading> */}
-                
-            <PartnerModal/>
-              {/* </Heading> */}
-            </Box>
-          </Stack>
+    <Flex textAlign="center" align="center" border="2px solid red" minH="100vh" justify="center" w="full">
+      <button onClick={onOpenModal} >Open</button>
+        <PartnerModal open={isPartnerModalOpen} onCloseModal={onCloseModal} title="ABC"/>
+    </Flex>
   )
 }
