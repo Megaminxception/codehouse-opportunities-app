@@ -11,9 +11,6 @@ export default function Events() {
   const [hosts, setHosts] = useState([]);
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
-  // Create State Variable that toggles with date
-  const [events, setEvents] = useState([])
-
   
   // State to store the selected date
   const [selectedDate, setSelectedDate] = useState(new Date());
