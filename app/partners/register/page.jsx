@@ -1,47 +1,46 @@
 'use client';
-import React, { useState } from 'react';
+import React from 'react';
 import { Fieldset, Stack, Flex } from '@chakra-ui/react';
 import { Button } from '@/components/ui/button';
 import { TextArea } from '@/components/ui/textArea';
 import { TextInput } from '@/components/ui/textInput';
 import { Field } from '@/components/ui/field';
 import { Checkbox } from '@/components/ui/checkbox';
+import { useForm, Controller } from 'react-hook-form';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
 import {
 	NativeSelectRoot,
 	NativeSelectField,
 } from '@/components/ui/native-select';
-// Main issues currently:
-// The checkbox isn't saving the state of the checked value. The examples I seen in docs used zod which I haven't tried yet
-// The select dropdown styling and placeholder wise is not working out. I will be looking for someone who can help me with this.
-// The rest of the form data is logging correctly
-// the form state handling / submission will be seperated into custom hooks after the above issues are fixed
-// Let me know if I should work on the end points etc for submission after the above issues are fixed
+
+const partnerRegistrationSchema = z.object({
+	firstName: z.string().min(1, 'First name is required'),
+	lastName: z.string().min(1, 'Last name is required'),
+	email: z.string().email('Invalid email address'),
+	organization: z.string().min(1, 'Organization is required'),
+	website: z.string().url('Invalid URL'),
+	location: z.string().min(1, 'Location is required'),
+	industry: z.string().min(1, 'Industry is required'),
+	description: z.string().min(10, 'Description must be at least 10 characters'),
+	agreement: z.boolean().refine((val) => val, 'You must agree to the terms'),
+});
+
 const PartnerRegistrationForm = () => {
-	const [agreement, setAgreement] = useState(false);
-	const [formData, setFormData] = useState({
-		firstName: '',
-		lastName: '',
-		email: '',
-		organization: '',
-		website: '',
-		location: '',
-		industry: '',
-		description: '',
-		checked: agreement, // Added for the checkbox
+	const {
+		register,
+		control,
+		handleSubmit,
+		formState: { errors },
+	} = useForm({
+		resolver: zodResolver(partnerRegistrationSchema),
+		defaultValues: {
+			agreement: false,
+		},
 	});
 
-	const handleChange = (e) => {
-		const { name, value, type, checked } = e.target || e;
-		console.log('name:', name);
-		setFormData((prev) => ({
-			...prev,
-			[name]: type === '' ? checked : value,
-		}));
-	};
-
-	const handleSubmit = (e) => {
-		e.preventDefault();
-		console.log('Form Data:', formData);
+	const onSubmit = (data) => {
+		console.log('Form Data:', data);
 	};
 
 	return (
@@ -49,16 +48,19 @@ const PartnerRegistrationForm = () => {
 			bg='primaryWhite'
 			minH='100vh'
 			justify='center'
-			align='center'>
+			align='center'
+			direction='column'
+			pt='96px'
+			pb='250px'>
 			<form
-				onSubmit={handleSubmit}
-				className='w-full'>
+				onSubmit={handleSubmit(onSubmit)}
+				className='w-full max-w-[40rem]'>
 				<Fieldset.Root
 					pos='inherit'
 					py='2rem'
-					w='45%'
+					w='100%'
 					align='center'>
-					<Stack className='p-8 border border-gray-300 rounded shadow-md'>
+					<Stack className='p-8 '>
 						<Fieldset.Legend>
 							<h1 className='text-5xl font-bold text-black '>
 								Partner Registration
@@ -75,56 +77,69 @@ const PartnerRegistrationForm = () => {
 							<Field label='Point of Contact First Name*'>
 								<TextInput
 									placeholder='Jane'
-									name='firstName'
-									onChange={handleChange}
+									{...register('firstName')}
 								/>
+								{errors.firstName && (
+									<p className='text-red-500'>{errors.firstName.message}</p>
+								)}
 							</Field>
+
 							<Field label='Point of Contact Last Name*'>
 								<TextInput
 									placeholder='Doe'
-									name='lastName'
-									onChange={handleChange}
+									{...register('lastName')}
 								/>
+								{errors.lastName && (
+									<p className='text-red-500'>{errors.lastName.message}</p>
+								)}
 							</Field>
 						</Flex>
 
 						<Field label='Point of Contact Email*'>
 							<TextInput
+								{...register('email')}
 								placeholder='jane@doe.com'
-								name='email'
-								onChange={handleChange}
 							/>
+							{errors.email && (
+								<p className='text-red-500'>{errors.email.message}</p>
+							)}
 						</Field>
 
 						<Field label='Organization*'>
 							<TextInput
+								{...register('organization')}
 								placeholder='ABC Company'
-								name='organization'
-								onChange={handleChange}
 							/>
+							{errors.organization && (
+								<p className='text-red-500'>{errors.organization.message}</p>
+							)}
 						</Field>
 
 						<Field label='Organization Website*'>
 							<TextInput
+								{...register('website')}
 								placeholder='abc.co'
-								name='website'
-								onChange={handleChange}
 							/>
+							{errors.website && (
+								<p className='text-red-500'>{errors.website.message}</p>
+							)}
 						</Field>
 
 						<Field label='Organization Location*'>
 							<TextInput
+								{...register('location')}
 								placeholder='New York, NY USA'
-								name='location'
-								onChange={handleChange}
 							/>
+							{errors.location && (
+								<p className='text-red-500'>{errors.location.message}</p>
+							)}
 						</Field>
 
 						<Field label='Industry*'>
 							<NativeSelectRoot>
 								<NativeSelectField
-									name='industry'
-									placeholder='Select your industry'
+									{...register('industry')}
+									placeholder='Technology'
 									items={[
 										'Technology',
 										'Healthcare',
@@ -132,29 +147,45 @@ const PartnerRegistrationForm = () => {
 										'Education',
 										'Other',
 									]}
-									onChange={handleChange}
 								/>
 							</NativeSelectRoot>
+							{errors.industry && (
+								<p className='text-red-500'>{errors.industry.message}</p>
+							)}
 						</Field>
 
 						<Field label='Organization Description*'>
 							<TextArea
-								id='description'
+								{...register('description')}
 								placeholder="We're dedicated to the ABC's."
-								name='description'
-								onChange={handleChange}
 							/>
+							{errors.description && (
+								<p className='text-red-500'>{errors.description.message}</p>
+							)}
 						</Field>
+
 						<Stack
 							direction='row'
-							align='center'>
-							<Checkbox
+							mt={2}>
+							<Controller
 								name='agreement'
-								onCheckedChange={() => setAgreement((prev) => !prev)}
-								className='w-5 h-5 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500'
+								control={control}
+								render={({ field }) => (
+									<Checkbox
+										variant='subtle'
+										checked={field.value}
+										onChange={(e) => field.onChange(e.target.checked)}
+										className='w-5 h-5 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500'
+									/>
+								)}
 							/>
-							<Stack mt={7}>
-								<span className='text-white text-start'>
+							{errors.agreement && (
+								<p className='text-red-500'>{errors.agreement.message}</p>
+							)}
+							<Stack
+								ml={2}
+								spacing={0}>
+								<span className='text-black text-start'>
 									I verify the responses above are correct.
 								</span>
 								<span className='text-sm text-gray-600 text-start'>
@@ -175,4 +206,5 @@ const PartnerRegistrationForm = () => {
 		</Flex>
 	);
 };
+
 export default PartnerRegistrationForm;
