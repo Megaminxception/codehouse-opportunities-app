@@ -132,7 +132,7 @@ export default function Events() {
       pt={24}
       fontFamily="var(--font-mulish)"
     >
-      <Box mb={8} textAlign="center">
+      <Box mb={8} textAlign="center" pt={8}>
         <Text as="h1" fontSize="34px" fontWeight="900" color="black">
           Events
         </Text>
