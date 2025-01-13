@@ -17,7 +17,6 @@ export default function Events() {
 
   // Function to update the state when a date is selected
   const handleDateChange = (date) => {
-    date = date.toISOString();
     setSelectedDate(date);
     console.log("Selected date:", date);
   };
@@ -40,9 +39,7 @@ export default function Events() {
         throw new Error(`Fetch failed. ${response.status} ${response.statusText}`)
       }
   
-      // Check the content type to determine how to parse the response
-      const isJson = (response.headers.get('content-type') || '').includes('application/json')
-      let data = isJson ? await response.json() : await response.text()
+      let data = await response.json();
   
       // return a tuple: [data, error]
       return [data, null]; 
@@ -133,27 +130,22 @@ export default function Events() {
     .then(([data, error]) => {
       if (error) {
         console.error('Error fetching events:', error);
-      } else {
-        // Map through records array and console log each record and field info
-        data.records.map((record, index) => {
-          console.log(`Record ${index + 1}:`, record);
-          console.log(`Record ${index + 1} ID:`, record.id);
-          console.log(`Record ${index + 1} createdTime:`, record.createdTime);
-          for (const [key, value] of Object.entries(record.fields)) {
-            console.log(`${key}:`, value);
-          }
-        });
-      }
+      };
     });
   }, []);
 
   // Rendered Information
   const filteredEvents = events.filter((event) => {
-    // Create a regex to match the selectedDate
-    const regex = new RegExp(`^${selectedDate.split("T")[0]}$`);
+    if (!event.EventDate) return false
+    
+    const selectedDateObj = new Date(selectedDate);
+    const eventDateObj = new Date(event.EventDate);
+    
+    const isSameDay = selectedDateObj.getDay() === eventDateObj.getDay();
+    const isSameMonth = selectedDateObj.getMonth() === eventDateObj.getMonth();
+    const isSameYear = selectedDateObj.getFullYear() === eventDateObj.getFullYear();
   
-    // Check if the event start date matches the selectedDate
-    return regex.test(event.startDate);
+    return isSameDay && isSameMonth && isSameYear;
   });
   
   console.log("Filtered Events:", filteredEvents);
@@ -272,7 +264,7 @@ export default function Events() {
       </Box>
 
       {/* Event Items */}
-      {events.map((event) => (
+      {filteredEvents.map((event) => (
         <EventItem key={event.id} event={event} />
       ))}
     </Flex>
