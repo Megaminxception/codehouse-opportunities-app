@@ -1,6 +1,6 @@
 "use client";
 
-import { Flex, Grid, createListCollection, GridItem } from "@chakra-ui/react";
+import { Flex, Grid, createListCollection, GridItem, Heading, Input } from "@chakra-ui/react";
 import {
   SelectContent,
   SelectItem,
@@ -11,6 +11,9 @@ import {
 } from "@/components/ui/select";
 import { AIRTABLE, AIRTABLE_API_KEY, useEffectAsync } from "@/app/utils";
 import { useState } from "react";
+import GalleryItem from "@/components/common/GalleryItem";
+
+const codehouseInvolvement = "Codehouse Involvement";
 
 const createGraduationYearList = async () => {
   const res = async (direction, def) => {
@@ -35,7 +38,41 @@ const createGraduationYearList = async () => {
   return createListCollection({ items });
 };
 
-function Filter({ title, options, placeholder, multiple }) {
+const filterDataToFormula = (data) => {
+  const join = (fn, arr) => {
+    if (arr.length === 1) {
+      return arr[0];
+    } else if (arr.length > 1) {
+      return `${fn}(${arr.join(", ")})`;
+    } else {
+      return "";
+    }
+  };
+
+  const conds = [];
+  for (const field in data) {
+    if (field === codehouseInvolvement) {
+      if (data[field]) {
+        conds.push(data[field] == "Yes" ? `{${field}} = "Scholar"` : `{${field}} != "Scholar"`);
+      }
+    } else if (typeof data[field] === "string") {
+      conds.push(`{${field}} = "${data[field]}"`);
+    } else if (data[field]?.length) {
+      // XXX: FIND can return partial matches (ie FIND("Hi", "Hill") will return true), but there
+      // doesn't seem to be another way to check if a multiselect field includes a record using a
+      // formula
+      conds.push(
+        join(
+          "OR",
+          data[field].map((v) => `FIND("${v}", {${field}})`)
+        )
+      );
+    }
+  }
+  return join("AND", conds);
+};
+
+function Filter({ title, options, placeholder, multiple, onValueChange }) {
   return (
     <SelectRoot
       size="sm"
@@ -44,7 +81,7 @@ function Filter({ title, options, placeholder, multiple }) {
       multiple={multiple}
       closeOnSelect={!multiple}
       disabled={!options.items.length}
-      fontFamily="var(--font-mulish)"
+      onValueChange={onValueChange}
     >
       <SelectLabel>{title}</SelectLabel>
       <SelectTrigger clearable={true} className="border-1 rounded-lg">
@@ -61,7 +98,7 @@ function Filter({ title, options, placeholder, multiple }) {
   );
 }
 
-function Filters() {
+function Filters({ setFilterData }) {
   const [filterOptions, setFilterOptions] = useState({});
   const filters = [
     { fieldName: "School ", name: "School" },
@@ -130,19 +167,91 @@ function Filters() {
           options={filterOptions[name]?.items ?? emptyList}
           multiple={filterOptions[name]?.multi}
           placeholder={filterOptions[name] ? "All" : "Loading..."}
+          onValueChange={(e) =>
+            setFilterData((v) => ({
+              ...v,
+              [fieldName]: filterOptions[name]?.multi ? e.value : e.value?.[0],
+            }))
+          }
         />
       ))}
     </>
   );
 }
 
-export default function () {
+function Student({ fields, onClick }) {
+  const icon = (
+    <div className="w-10 h-10 rounded-full flex justify-center items-center text-white bg-[#2C2C2C]">
+      <p className="text-lg">{fields["First Name"][0]}</p>
+    </div>
+  );
   return (
-    <Flex justify="flex-start" align="center" direction="column" pt={24}>
-      <Grid templateRows="repeat(3, 1fr)" templateColumns="repeat(3, 1fr)" gap="6">
-        <GridItem colSpan="3">{/* Search box here */}</GridItem>
-        <Filters />
+    <GalleryItem
+      icon={icon}
+      line1={`${fields["First Name"]} ${fields["Last Name "]}`}
+      line2={fields["School "]}
+      line3={fields["Graduation Year"]}
+      buttonText="View Profile"
+      onClick={onClick}
+    />
+  );
+}
+
+function Students({ filterData }) {
+  const [students, setStudents] = useState([]);
+
+  useEffectAsync(async () => {
+    try {
+      const res = await AIRTABLE.table("Students")
+        .select({
+          maxRecords: 6, // TODO: pagination
+          filterByFormula: filterDataToFormula(filterData),
+        })
+        .all();
+
+      setStudents(res);
+    } catch (err) {
+      console.error(err);
+    }
+  }, [filterData]);
+
+  return (
+    <>
+      {students.map((student) => (
+        <Student key={student.id} fields={student.fields} />
+      ))}
+    </>
+  );
+}
+
+export default function () {
+  const [filterData, setFilterData] = useState({});
+  return (
+    <Flex
+      justify="flex-start"
+      align="center"
+      direction="column"
+      pt="24"
+      pb="16"
+      fontFamily="var(--font-mulish)"
+    >
+      <Heading size="5xl" fontWeight="bold" pt="6">
+        Our Students
+      </Heading>
+      <Heading size="4xl" fontWeight="light" textAlign="center" className="w-[40%]" pb="4">
+        View profiles of top talent from the CodeHouse network.
+      </Heading>
+
+      <Grid templateRows="0.8fr 1fr 1fr" templateColumns="repeat(3, 1fr)" gapX="6" gapY="2" pb="8">
+        <GridItem colSpan="3">
+          <Input type="text" placeholder="Search" className="rounded-3xl h-full" />
+        </GridItem>
+        <Filters setFilterData={setFilterData} />
       </Grid>
+      <Grid templateRows="repeat(2, 1fr)" templateColumns="repeat(3, 1fr)" gapX="20" gapY="10">
+        <Students filterData={filterData} />
+      </Grid>
+      {/* Page selector here */}
     </Flex>
   );
 }
