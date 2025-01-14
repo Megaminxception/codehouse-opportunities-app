@@ -134,8 +134,6 @@ export default function Events() {
     });
   }, []);
 
-  console.log(events);
-
   // Rendered Information
   const filteredEvents = events.filter((event) => {
     if (!event.EventDate) return false
