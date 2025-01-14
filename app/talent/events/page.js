@@ -134,16 +134,24 @@ export default function Events() {
     });
   }, []);
 
+  console.log(events);
+
   // Rendered Information
   const filteredEvents = events.filter((event) => {
     if (!event.EventDate) return false
     
-    const selectedDateObj = new Date(selectedDate);
-    const eventDateObj = new Date(event.EventDate);
+    const eventDateObj = new Date(event.EventDate + 'T00:00:00Z');
+    // Timezone adjustment to guarantee local time
+    eventDateObj.setMinutes(eventDateObj.getMinutes() + eventDateObj.getTimezoneOffset());
     
-    const isSameDay = selectedDateObj.getDay() === eventDateObj.getDay();
-    const isSameMonth = selectedDateObj.getMonth() === eventDateObj.getMonth();
-    const isSameYear = selectedDateObj.getFullYear() === eventDateObj.getFullYear();
+    const isSameDay = selectedDate.getDate() === eventDateObj.getDate();
+    const isSameMonth = selectedDate.getMonth() === eventDateObj.getMonth();
+    const isSameYear = selectedDate.getFullYear() === eventDateObj.getFullYear();
+
+    if (isSameDay && isSameMonth && isSameYear) {
+      console.log(selectedDate.getDate(), eventDateObj.getDate())
+      console.log(event, new Date(event.EventDate))
+    }
   
     return isSameDay && isSameMonth && isSameYear;
   });
