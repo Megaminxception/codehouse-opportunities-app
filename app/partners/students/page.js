@@ -31,7 +31,7 @@ const createGraduationYearList = async () => {
   return createListCollection({ items });
 };
 
-const filterDataToFormula = (data) => {
+const createFilterFormula = (filters, query) => {
   const join = (fn, arr) => {
     if (arr.length === 1) {
       return arr[0];
@@ -43,24 +43,28 @@ const filterDataToFormula = (data) => {
   };
 
   const conds = [];
-  for (const field in data) {
+  for (const field in filters) {
     if (field === codehouseInvolvement) {
-      if (data[field]) {
-        conds.push(data[field] == "Yes" ? `{${field}} = "Scholar"` : `{${field}} != "Scholar"`);
+      if (filters[field]) {
+        conds.push(filters[field] == "Yes" ? `{${field}} = "Scholar"` : `{${field}} != "Scholar"`);
       }
-    } else if (typeof data[field] === "string") {
-      conds.push(`{${field}} = "${data[field]}"`);
-    } else if (data[field]?.length) {
+    } else if (typeof filters[field] === "string") {
+      conds.push(`{${field}} = "${filters[field]}"`);
+    } else if (filters[field]?.length) {
       // XXX: FIND can return partial matches (ie FIND("Hi", "Hill") will return true), but there
       // doesn't seem to be another way to check if a multiselect field includes a record using a
       // formula
       conds.push(
         join(
           "OR",
-          data[field].map((v) => `FIND("${v}", {${field}})`)
+          filters[field].map((v) => `FIND("${v}", {${field}})`)
         )
       );
     }
+  }
+
+  if (query) {
+    conds.push(`FIND("${query}", {First Name} & {Last Name })`);
   }
   return join("AND", conds);
 };
@@ -163,7 +167,7 @@ function Student({ fields, onClick }) {
   );
 }
 
-function Students({ filterData }) {
+function Students({ filterData, query }) {
   const [students, setStudents] = useState([]);
 
   useEffectAsync(async () => {
@@ -171,7 +175,7 @@ function Students({ filterData }) {
       const res = await AIRTABLE.table("Students")
         .select({
           maxRecords: 6, // TODO: pagination
-          filterByFormula: filterDataToFormula(filterData),
+          filterByFormula: createFilterFormula(filterData, query),
         })
         .all();
 
@@ -179,7 +183,7 @@ function Students({ filterData }) {
     } catch (err) {
       console.error(err);
     }
-  }, [filterData]);
+  }, [filterData, query]);
 
   return (
     <>
@@ -192,6 +196,7 @@ function Students({ filterData }) {
 
 export default function () {
   const [filterData, setFilterData] = useState({});
+  const [query, setQuery] = useState("");
   return (
     <Flex
       justify="flex-start"
@@ -210,12 +215,18 @@ export default function () {
 
       <Grid templateRows="0.8fr 1fr 1fr" templateColumns="repeat(3, 1fr)" gapX="6" gapY="2" pb="8">
         <GridItem colSpan="3">
-          <Input type="text" placeholder="Search" className="rounded-3xl h-full" />
+          {/* TODO: might be a good idea to debounce this */}
+          <Input
+            type="text"
+            placeholder="Search"
+            className="rounded-3xl h-full"
+            onChange={(e) => setQuery(e.target.value)}
+          />
         </GridItem>
         <Filters setFilterData={setFilterData} />
       </Grid>
       <Grid templateRows="repeat(2, 1fr)" templateColumns="repeat(3, 1fr)" gapX="20" gapY="10">
-        <Students filterData={filterData} />
+        <Students filterData={filterData} query={query} />
       </Grid>
       {/* Page selector here */}
     </Flex>
