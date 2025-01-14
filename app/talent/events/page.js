@@ -31,6 +31,9 @@ export default function Events() {
   const [calendarSelected, setCalendarSelected] = useState(true);
   const [listSelected, setListSelected] = useState(false);
 
+  //State to controll date input
+  const [inputDate, setInputDate] = useState("");
+
   // Function to update the state when a date is selected
   const handleDateChange = (date) => {
     setSelectedDate(date);
@@ -189,8 +192,40 @@ export default function Events() {
             </Box>
           )}
         </Box>
-        {/* Host Filter */}
-        <Flex direction="column" align="center">
+        <Flex direction="row" align="center" justifyContent="center" gap="10px">
+          {listSelected && (
+            <>
+              <Box width="200px" textAlign="left">
+                <Text
+                  fontSize="14px"
+                  fontWeight="medium"
+                  mb={2}
+                  color="gray.700"
+                >
+                  Date
+                </Text>
+                <Input
+                  type="date"
+                  size="md"
+                  borderRadius="md"
+                  bg="white"
+                  border="1px solid"
+                  borderColor="gray.300"
+                  p={2}
+                  width="100%"
+                  color="black"
+                  _hover={{ borderColor: "gray.400" }}
+                  _focus={{
+                    borderColor: "blue.500",
+                    boxShadow: "0 0 0 1px blue.500",
+                  }}
+                  value={inputDate}
+                  onChange={(e) => setInputDate(e.target.value)}
+                />
+              </Box>
+            </>
+          )}
+          {/* Host Filter */}
           <Box width="200px" textAlign="left">
             <Text fontSize="14px" fontWeight="medium" mb={2} color="gray.700">
               Host
@@ -241,7 +276,9 @@ export default function Events() {
         </Flex>
         <Center>
           {/* Calendar component with onChange handler */}
-          <Calendar onChange={handleDateChange} value={selectedDate} />
+          {calendarSelected && (
+            <Calendar onChange={handleDateChange} value={selectedDate} />
+          )}
         </Center>
       </Box>
 
