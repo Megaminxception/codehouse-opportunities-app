@@ -162,9 +162,14 @@ export default function SubmitOpportunity() {
             </Field>
           </Stack>
 
-          <Checkbox {...register("Verify")}>
+          <label className="self-start text-left">
+            <input className="mr-2" type="checkbox" {...register("Verify")} />
             I verify the responses above are correct.*
-          </Checkbox>
+            <br />
+            <span className="text-gray-500 text-sm">
+              By checking this box you certify the accuracy of your submission.
+            </span>
+          </label>
           {errors.Verify && (
             <Text color="red.500">{errors.Verify.message}</Text>
           )}
