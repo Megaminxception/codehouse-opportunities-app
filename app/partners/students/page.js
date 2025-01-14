@@ -62,14 +62,14 @@ function Filter({ title, options, placeholder, multiple }) {
 }
 
 function Filters() {
-  const [filterData, setFilterData] = useState({});
+  const [filterOptions, setFilterOptions] = useState({});
   const filters = [
-    { id: "fldt4rL3gdIROwiLz", name: "School" },
-    { name: "Graduation Year" },
-    { id: "fldFNV5dsHlQMnbN6", name: "Majors" },
-    { id: "fldOgy7iyYEoWcc6X", name: "Career Paths" },
-    { id: "fldoGL9NSqRGsewcW", name: "Skills" },
-    { name: "Codehouse Scholar" },
+    { fieldName: "School ", name: "School" },
+    { fieldName: "Graduation Year", name: "Graduation Year", manual: true },
+    { fieldName: "Major", name: "Majors" },
+    { fieldName: "Career Interest", name: "Career Paths" },
+    { fieldName: "Technical Skills", name: "Skills" },
+    { fieldName: codehouseInvolvement, name: "Codehouse Scholar", manual: true },
   ];
   const emptyList = createListCollection({ items: [] });
 
@@ -87,12 +87,12 @@ function Filters() {
       ).then((r) => r.json());
       const students = resp.tables.find((table) => table?.id === "tblZuTMwzYU52he5m");
       const result = {};
-      for (const { id, name } of filters) {
-        if (!id) {
+      for (const { fieldName, name, manual } of filters) {
+        if (manual) {
           continue;
         }
 
-        const fieldData = students.fields.find((field) => field?.id === id);
+        const fieldData = students.fields.find((field) => field?.name === fieldName);
         if (
           !fieldData ||
           (fieldData.type !== "multipleSelects" && fieldData.type !== "singleSelect")
@@ -114,7 +114,7 @@ function Filters() {
         items: createListCollection({ items: ["Yes", "No"] }),
         multi: false,
       };
-      setFilterData(result);
+      setFilterOptions(result);
     } catch (err) {
       /* TODO: display error */
       console.error(err);
@@ -123,13 +123,13 @@ function Filters() {
 
   return (
     <>
-      {filters.map(({ name }) => (
+      {filters.map(({ name, fieldName }) => (
         <Filter
           key={name}
           title={name}
-          options={filterData[name]?.items ?? emptyList}
-          multiple={filterData[name]?.multi}
-          placeholder={filterData[name] ? "All" : "Loading..."}
+          options={filterOptions[name]?.items ?? emptyList}
+          multiple={filterOptions[name]?.multi}
+          placeholder={filterOptions[name] ? "All" : "Loading..."}
         />
       ))}
     </>
