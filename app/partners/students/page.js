@@ -1,17 +1,10 @@
 "use client";
 
 import { Flex, Grid, createListCollection, GridItem, Heading, Input } from "@chakra-ui/react";
-import {
-  SelectContent,
-  SelectItem,
-  SelectLabel,
-  SelectRoot,
-  SelectTrigger,
-  SelectValueText,
-} from "@/components/ui/select";
 import { AIRTABLE, AIRTABLE_API_KEY, useEffectAsync } from "@/app/utils";
 import { useState } from "react";
-import GalleryItem from "@/components/common/GalleryItem";
+import GalleryItem from "@/components/gallery/GalleryItem";
+import SelectFilter from "@/components/gallery/SelectFilter";
 
 const codehouseInvolvement = "Codehouse Involvement";
 
@@ -71,32 +64,6 @@ const filterDataToFormula = (data) => {
   }
   return join("AND", conds);
 };
-
-function Filter({ title, options, placeholder, multiple, onValueChange }) {
-  return (
-    <SelectRoot
-      size="sm"
-      width="230px"
-      collection={options}
-      multiple={multiple}
-      closeOnSelect={!multiple}
-      disabled={!options.items.length}
-      onValueChange={onValueChange}
-    >
-      <SelectLabel>{title}</SelectLabel>
-      <SelectTrigger clearable={true} className="border-1 rounded-lg">
-        <SelectValueText placeholder={placeholder} className="px-2" />
-      </SelectTrigger>
-      <SelectContent>
-        {options.items.map((name) => (
-          <SelectItem item={name} key={name}>
-            {name}
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </SelectRoot>
-  );
-}
 
 function Filters({ setFilterData }) {
   const [filterOptions, setFilterOptions] = useState({});
@@ -161,7 +128,7 @@ function Filters({ setFilterData }) {
   return (
     <>
       {filters.map(({ name, fieldName }) => (
-        <Filter
+        <SelectFilter
           key={name}
           title={name}
           options={filterOptions[name]?.items ?? emptyList}
@@ -180,14 +147,13 @@ function Filters({ setFilterData }) {
 }
 
 function Student({ fields, onClick }) {
-  const icon = (
-    <div className="w-10 h-10 rounded-full flex justify-center items-center text-white bg-[#2C2C2C]">
-      <p className="text-lg">{fields["First Name"][0]}</p>
-    </div>
-  );
   return (
     <GalleryItem
-      icon={icon}
+      icon={
+        <div className="w-10 h-10 rounded-full flex justify-center items-center text-white bg-[#2C2C2C]">
+          <p className="text-lg">{fields["First Name"][0]}</p>
+        </div>
+      }
       line1={`${fields["First Name"]} ${fields["Last Name "]}`}
       line2={fields["School "]}
       line3={fields["Graduation Year"]}
