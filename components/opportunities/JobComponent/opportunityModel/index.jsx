@@ -1,30 +1,14 @@
-'use client'
-import { Modal } from 'react-responsive-modal';
-import { useState } from 'react';
-import ModalContainer from './modelContainer';
+"use client";
 
-export function OpportunityModal() {
-    const [open, setOpen] = useState(false);
+import { Modal } from "react-responsive-modal";
+import ModalContainer from "./modelContainer";
 
-    const onOpenModal = () => setOpen(true);
-    const onCloseModal = () => {
-        setOpen(false);
-        console.log("Closing modal...");
-    };
+import 'react-responsive-modal/styles.css';
 
-    return (
-        <div>
-            <button
-                onClick={onOpenModal}
-                className='bg-[#2C2C2C] px-[1.5em] text-white py-[0.5em] rounded'
-            >
-                Learn More
-            </button>
-
-            <Modal open={open} onClose={onCloseModal} center>
-                <ModalContainer onCloseModal={onCloseModal} />
-            </Modal>
-        </div>
-    );
+export function OpportunityModal({ isOpen, onClose }) {
+  return (
+    <Modal open={isOpen} onClose={onClose} showCloseIcon={false} center>
+      <ModalContainer onCloseModal={onClose} />
+    </Modal>
+  );
 }
-
