@@ -21,17 +21,14 @@ const opportunities = {
   ]
 }
 
-const Jobs = () => {
-
+export const Jobs = ({ openModal }) => {
   return (
     <Grid>
       {
         opportunities["records"].map((opportunity) => (
-          <OpportunityContainer key={opportunity.id} {...opportunity.fields} />
+          <OpportunityContainer key={opportunity.id} {...opportunity.fields} openModal={openModal} />
         ))
       }
     </Grid>
   )
 }
-
-export default Jobs;
