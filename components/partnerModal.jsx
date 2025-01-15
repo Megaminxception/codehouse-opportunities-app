@@ -7,7 +7,6 @@ import { Flex } from "@chakra-ui/react";
 const sectionStyle = {
   display: "grid",
   gridTemplateColumns: "repeat(2, auto)",
-  // gridColumnGap: "10px",
   gridRowGap: "10px",
   alignItems: "center"
 };
@@ -47,7 +46,6 @@ export const PartnerModal = ({ open, onCloseModal, title, partnerTypes, tier, in
             <h4>{title[0]}</h4>
           </aside>
           <h2 style={h2Style}>{title}</h2>
-
         </header>
         <section style={sectionStyle}>
 
@@ -68,11 +66,8 @@ export const PartnerModal = ({ open, onCloseModal, title, partnerTypes, tier, in
 
           <h3 style={h3Style}>Website:</h3>
           <p style={{
-            fontSize: "14px", color: "#6F0010",paddingRight: "100px", 
-          }
-
-
-          }>{website}</p>
+            fontSize: "14px", color: "#6F0010", paddingRight: "100px",
+          }}>{website}</p>
         </section>
         <Link href="/talent/opportunities" style={{ display: "flex", justifyContent: "center" }}>
           <Button bg="#2C2C2C" color="white" >
