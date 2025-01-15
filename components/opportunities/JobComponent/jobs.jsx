@@ -21,7 +21,7 @@ const opportunities = {
   ]
 }
 
-const Jobs = () => {
+export const Jobs = () => {
 
   return (
     <Grid>
@@ -33,5 +33,3 @@ const Jobs = () => {
     </Grid>
   )
 }
-
-export default Jobs;

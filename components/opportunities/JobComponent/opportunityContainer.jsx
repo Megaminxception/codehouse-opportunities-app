@@ -1,7 +1,7 @@
 import { Box } from "@chakra-ui/react";
 import OpportunityDetails from "./opportunityDetails";
 import OpportunitiesLogo from "./opportunityLogo";
-import OpportunityModel from "./opportunityModel";
+import { OpportunityModal } from "./opportunityModel/index.jsx";
 
 const OpportunityContainer = ({
     "Opportunity Type": opportunityType,
@@ -15,12 +15,12 @@ const OpportunityContainer = ({
 }
 ) => {
     return (
-        <Box py={8} className="shadow-md border-solid border-[1px] border-[#B3B3B3] border-[filter: blur(4px)] w-[16rem] pl-10">
-            <Box className="">
-                <OpportunitiesLogo type={opportunityType} />
-                <OpportunityDetails opportunityName={opportunityName} opportunityType={opportunityType} partner={partner} />
+        <Box py={8} className="shadow-md border-solid border-[1px] border-[#B3B3B3] border-[filter: blur(4px)] w-[16rem] p-10">
+            <OpportunitiesLogo type={opportunityType} />
+            <OpportunityDetails opportunityName={opportunityName} opportunityType={opportunityType} partner={partner} />
+            <Box className="place-items-center">
+                <OpportunityModal />
             </Box>
-            <OpportunityModel />
         </Box>
     )
 };
