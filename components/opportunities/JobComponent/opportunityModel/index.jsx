@@ -2,6 +2,7 @@
 import { Modal } from 'react-responsive-modal';
 import { useState } from 'react';
 import ModalContainer from './modelContainer';
+import { useDisclosure } from '@chakra-ui/react';
 
 export function OpportunityModal() {
     const [open, setOpen] = useState(false);
