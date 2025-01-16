@@ -7,7 +7,7 @@ const Jobs = ({ opportunitiesData = [], openModal }) => {
     <>
       {
         opportunitiesData.map((opportunity) => (
-          <OpportunityContainer key={opportunity.id} {...opportunity.fields} openModal={openModal />
+          <OpportunityContainer key={opportunity.id} {...opportunity.fields} openModal={openModal} />
         ))
       }
     </>
