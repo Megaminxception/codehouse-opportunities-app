@@ -2,7 +2,7 @@ import OpportunityContainer from "./opportunityContainer";
 import { Grid } from "@chakra-ui/react";
 
 
-const Jobs = ({ opportunitiesData = [], openModal }) => {
+export const Jobs = ({ opportunitiesData = [], openModal }) => {
   return (
     <>
       {
