@@ -1,12 +1,14 @@
 "use client";
 import { Flex } from "@chakra-ui/react";
 import OpportunitiesFilter from "@/components/opportunities/OpportunitiesFilters";
-import Jobs from "@/components/opportunities/JobComponent/jobs"
+import { OpportunityModal } from "@/components/opportunities/JobComponent/opportunityModel"
+import { Jobs } from "@/components/opportunities/JobComponent/jobs"
 import { useEffect, useState } from "react";
 
 
 export default function Opportunities() {
   const [opportunities, setOpportunities] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   
   useEffect(() => {
     const fetchOpportunities = async () => {
@@ -36,8 +38,9 @@ export default function Opportunities() {
       width: "100%",
       maxWidth: "1200px", // Optional max width for the grid container
     }}>
-        <Jobs opportunitiesData = {opportunities}/>
+        <Jobs opportunitiesData = {opportunities} openModal={() => setIsModalOpen(true)} />
       </div>
+      <OpportunityModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </Flex>
   );
 }

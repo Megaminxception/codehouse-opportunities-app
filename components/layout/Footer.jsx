@@ -1,6 +1,6 @@
-import { Heading, VStack } from "@chakra-ui/react";
-import Link from "next/link";
-import React from "react";
+import { Heading, VStack } from '@chakra-ui/react';
+import Link from 'next/link';
+import React from 'react';
 
 export const Footer = () => {
   return (
