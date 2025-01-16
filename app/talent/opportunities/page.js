@@ -14,7 +14,7 @@ export default function Opportunities() {
     const fetchOpportunities = async () => {
       try{
         const result = await fetch(`https://api.airtable.com/v0/${process.env.NEXT_PUBLIC_AIRTABLE_BASE_ID}/Opportunities`, 
-        { headers: { Authorization: `Bearer ${process.env.NEXT_PUBLIC_API_KEY}` } })
+        { headers: { Authorization: `Bearer ${process.env.NEXT_PUBLIC_AIRTABLE_API_KEY}` } })
         const data = await result.json()
         if (data){
           setOpportunities(data.records)
@@ -27,7 +27,7 @@ export default function Opportunities() {
   }, [])
 
   return (
-    <Flex bg="primaryWhite" minH="100vh" justify="center" align="center" direction="column">
+    <Flex bg="primaryWhite" minH="100vh" justify="center" align="center" direction="column" pt='10rem'>
       <OpportunitiesFilter/>
       <br></br>
       <div style={{

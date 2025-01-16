@@ -21,7 +21,6 @@ export const Field = React.forwardRef(function Field(props, ref) {
 							...child.props,
 							style: {
 								...child.props.style,
-								color: 'black',
 								fontSize: '16px',
 							},
 					  })

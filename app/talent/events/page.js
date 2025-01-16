@@ -171,11 +171,6 @@ export default function Events() {
     const isSameDay = selectedDate.getDate() === eventDateObj.getDate();
     const isSameMonth = selectedDate.getMonth() === eventDateObj.getMonth();
     const isSameYear = selectedDate.getFullYear() === eventDateObj.getFullYear();
-
-    if (isSameDay && isSameMonth && isSameYear) {
-      console.log(selectedDate.getDate(), eventDateObj.getDate())
-      console.log(event, new Date(event.EventDate))
-    }
   
     return isSameDay && isSameMonth && isSameYear;
   });
@@ -189,7 +184,8 @@ export default function Events() {
       justify="flex-start"
       align="center"
       direction="column"
-      pt={24}
+      py={24}
+      gap={12}
       fontFamily="var(--font-mulish)"
     >
       <Box mb={8} textAlign="center" pt={8}>

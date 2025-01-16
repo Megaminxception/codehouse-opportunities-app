@@ -157,18 +157,6 @@
   resolved "https://registry.yarnpkg.com/@bedrock-layout/use-stateful-ref/-/use-stateful-ref-1.4.1.tgz#c543c61d15885e19506f068618a4d6427a5bf817"
   integrity sha512-4eKO2KdQEXcR5LI4QcxqlJykJUDQJWDeWYAukIn6sRQYoabcfI5kDl61PUi6FR6o8VFgQ8IEP7HleKqWlSe8SQ==
 
-"@chakra-ui/react@^3.2.0":
-  version "3.2.0"
-  resolved "https://registry.yarnpkg.com/@chakra-ui/react/-/react-3.2.0.tgz#0ee8d0d3969fe70c79ec6868aa94261ab3b744c5"
-  integrity sha512-j87BakG4UYECd5B7FEjHLkSXJmr0vyffp7Noc2/3voHBb+YF94SFIB7CIKLTPQgKuIf+fKZM6MapPDmsMHk3Kg==
-  dependencies:
-    "@bedrock-layout/use-stateful-ref" "^1.4.1"
-
-"@bedrock-layout/use-stateful-ref@^1.4.1":
-  version "1.4.1"
-  resolved "https://registry.yarnpkg.com/@bedrock-layout/use-stateful-ref/-/use-stateful-ref-1.4.1.tgz#c543c61d15885e19506f068618a4d6427a5bf817"
-  integrity sha512-4eKO2KdQEXcR5LI4QcxqlJykJUDQJWDeWYAukIn6sRQYoabcfI5kDl61PUi6FR6o8VFgQ8IEP7HleKqWlSe8SQ==
-
 "@chakra-ui/react@^3.3.0":
   version "3.3.0"
   resolved "https://registry.yarnpkg.com/@chakra-ui/react/-/react-3.3.0.tgz#fac96ebc788faabcdba01ea9c0bb81d5b6dbaf99"
